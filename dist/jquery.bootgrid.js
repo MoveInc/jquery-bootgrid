@@ -265,6 +265,7 @@ function loadRows() {
 				cells = $this.children("td"),
 				row = {};
 
+			row['data'] = $this.data();
 			$.each(that.columns, function(i, column) {
 				row[column.id] = column.converter.from(cells.eq(i).text());
 			});
@@ -606,7 +607,7 @@ function renderRows(rows) {
 				if (column.visible) {
 					var value = ($.isFunction(column.formatter)) ?
 						column.formatter.call(that, column, row) :
-						column.converter.to(row[column.id]),
+						column.converter.to(row[column.id], row),
 						cssClass = (column.cssClass.length > 0) ? " " + column.cssClass : "";
 					cells += tpl.cell.resolve(getParams.call(that, {
 						content: (value == null || value === "") ? "&nbsp;" : value,
@@ -1444,9 +1445,14 @@ Grid.prototype.append = function(rows)
         var appendedRows = [];
         for (var i = 0; i < rows.length; i++)
         {
-            if (appendRow.call(this, rows[i]))
+            var row = rows[i];
+            for (var j = 0; j < this.columns.length; j++) {
+              var column = this.columns[j];
+              row[column.id] = column.converter.from(row[column.id]);
+            }
+            if (appendRow.call(this, row))
             {
-                appendedRows.push(rows[i]);
+                appendedRows.push(row);
             }
         }
         sortRows.call(this);

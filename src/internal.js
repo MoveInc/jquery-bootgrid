@@ -152,8 +152,8 @@ function loadData() {
 
 		for (var i = 0; i < that.columns.length; i++) {
 			column = that.columns[i];
-			if (column.searchable && (column.visible || that.options.searchSettings.includeHidden) &&
-				column.converter.to(row[column.id], row, column, that).search(searchPattern) > -1) {
+			if (column.searchable && (column.visible || that.options.searchSettings.includeHidden ) &&
+				column.converter.to(row[column.id], row).toString().search(searchPattern) > -1) {
 				return true;
 			}
 		}
@@ -255,6 +255,7 @@ function loadRows() {
 				cells = $this.children("td"),
 				row = {};
 
+			row['data'] = $this.data();
 			$.each(that.columns, function(i, column) {
 				row[column.id] = column.converter.from(cells.eq(i).text());
 			});
