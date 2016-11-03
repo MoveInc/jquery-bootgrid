@@ -252,6 +252,7 @@ function loadRows() {
 				cells = $this.children("td"),
 				row = {};
 
+			row['data'] = $this.data();
 			$.each(that.columns, function(i, column) {
 				row[column.id] = column.converter.from(cells.eq(i).text());
 			});

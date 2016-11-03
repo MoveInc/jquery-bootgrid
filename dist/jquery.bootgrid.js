@@ -1,5 +1,5 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 09/30/2016
+ * jQuery Bootgrid v1.4.2 - 11/03/2016
  * Copyright (c) 2014-2016 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
@@ -262,6 +262,7 @@ function loadRows() {
 				cells = $this.children("td"),
 				row = {};
 
+			row['data'] = $this.data();
 			$.each(that.columns, function(i, column) {
 				row[column.id] = column.converter.from(cells.eq(i).text());
 			});
