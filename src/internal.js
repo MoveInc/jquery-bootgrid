@@ -864,8 +864,12 @@ function sortRows() {
 			return (item.order === "asc") ? value : value * -1;
 		}
 
-		var a = that.options.caseSensitive ? x[item.id] : x[item.id].toLowerCase();
-		var b = that.options.caseSensitive ? y[item.id] : y[item.id].toLowerCase();
+		var a = x[item.id] || '';
+		var b = y[item.id] || '';
+		if (that.options.caseSensitive) {
+			a = $.type(a) === 'string' ? a.toLowerCase() : a;
+			b = $.type(b) === 'string' ? b.toLowerCase() : b;
+		}
 
 		// if column has a converter, use it
         var col = that.getColumnSettings({id: item.id});
