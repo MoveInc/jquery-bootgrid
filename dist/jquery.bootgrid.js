@@ -1,5 +1,5 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 09/20/2016
+ * jQuery Bootgrid v1.4.2 - 11/03/2016
  * Copyright (c) 2014-2016 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
@@ -162,8 +162,8 @@ function loadData() {
 
 		for (var i = 0; i < that.columns.length; i++) {
 			column = that.columns[i];
-			if (column.searchable && (column.visible || that.options.searchSettings.includeHidden) &&
-				column.converter.to(row[column.id], row, column, that).search(searchPattern) > -1) {
+			if (column.searchable && (column.visible || that.options.searchSettings.includeHidden ) &&
+				column.converter.to(row[column.id], row).toString().search(searchPattern) > -1) {
 				return true;
 			}
 		}
@@ -607,7 +607,7 @@ function renderRows(rows) {
 				if (column.visible) {
 					var value = ($.isFunction(column.formatter)) ?
 						column.formatter.call(that, column, row) :
-						column.converter.to(row[column.id], row),
+						column.converter.to(row[column.id], row, column, that),
 						cssClass = (column.cssClass.length > 0) ? " " + column.cssClass : "";
 					cells += tpl.cell.resolve(getParams.call(that, {
 						content: (value == null || value === "") ? "&nbsp;" : value,
@@ -912,13 +912,6 @@ function sortRows() {
 			a = $.type(a) === 'string' ? a.toLowerCase() : a;
 			b = $.type(b) === 'string' ? b.toLowerCase() : b;
 		}
-
-		// if column has a converter, use it
-        var col = that.getColumnSettings({id: item.id});
-        if(col.length > 0){
-            a = col[0].converter ? col[0].converter.to(a, x) : a;
-            b = col[0].converter ? col[0].converter.to(b, y) : b;
-        }
 
 		return (a > b) ? sortOrder(1) :
 			(a < b) ? sortOrder(-1) :
