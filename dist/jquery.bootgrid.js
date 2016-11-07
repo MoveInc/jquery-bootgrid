@@ -1,5 +1,5 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 11/03/2016
+ * jQuery Bootgrid v1.4.2 - 11/07/2016
  * Copyright (c) 2014-2016 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
@@ -320,7 +320,7 @@ function renderActions() {
 				actions = $(tpl.actions.resolve(getParams.call(this)));
 
 			// Refresh Button
-			if (this.options.ajax || this.options.dataFunc) {
+			if ((this.options.ajax || this.options.dataFunc) && this.options.ajaxSettings.includeRefresh) {
 				var refreshIcon = tpl.icon.resolve(getParams.call(this, {
 						iconCss: css.iconRefresh
 					})),
@@ -1105,7 +1105,17 @@ Grid.defaults = {
          * @default "POST"
          * @for ajaxSettings
          **/
-        method: "POST"
+        method: "POST",
+
+        /**
+         * Option if refresh button should be shown
+         *
+         * @property includeRefresh
+         * @type Boolean
+         * @default true
+         * @for ajaxSettings
+         **/
+        includeRefresh: true
     },
 
     /**
