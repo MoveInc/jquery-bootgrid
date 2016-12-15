@@ -872,11 +872,11 @@ function sortRows() {
 		}
 
 		// if column has a converter, use it
-        var col = that.getColumnSettings({id: item.id});
-        if(col.length > 0){
-            a = col[0].converter ? col[0].converter.to(a, x) : a;
-            b = col[0].converter ? col[0].converter.to(b, y) : b;
-        }
+    var col = that.getColumnSettings({id: item.id});
+    if(col.length > 0){
+        a = col[0].converter ? col[0].converter.from(a, x) : a;
+        b = col[0].converter ? col[0].converter.from(b, y) : b;
+    }
 
 		return (a > b) ? sortOrder(1) :
 			(a < b) ? sortOrder(-1) :
