@@ -80,7 +80,6 @@
                         <thead>
                             <tr>
                                 <th data-column-id="id" data-identifier="true" data-converter="numeric" data-align="right" data-width="50">ID</th>
-                                <th data-column-id="avatar" data-formatter="avatar" data-converter="derived" data-sort-rendered="true" data-derived-rows="name">Avatar</th>
                                 <th data-column-id="name" data-formatter="link" data-order="asc" data-sort-rendered="true" data-converter="link" data-visible="false">Name</th>
                                 <th data-column-id="email" data-align="center" data-header-align="center" data-width="20%">Sender</th>
                                 <th data-column-id="received" data-css-class="cell" data-header-css-class="column" data-filterable="true">Received</th>
@@ -93,7 +92,6 @@
                         <tbody>
                             <tr>
                                 <td>1</td>
-                                <td></td>
                                 <td>Aimee Delaney</td>
                                 <td></td>
                                 <td>03.06.16</td>
@@ -104,7 +102,6 @@
                             </tr>
                             <tr>
                                 <td>2</td>
-                                <td>http://www.gefsgpegypt.org/Portals/0/empty_profile.gif</td>
                                 <td>{"text": "BORIS BULE", "url": "http://www.zzz.ca"}</td>
                                 <td>vitae.diam@Proinultrices.edu</td>
                                 <td>10.12.16</td>
@@ -115,7 +112,6 @@
                             </tr>
                             <tr>
                                 <td>3</td>
-                                <td>http://www.gefsgpegypt.org/Portals/0/empty_profile.gif</td>
                                 <td>{"text": "ALEX Reese", "url": "http://www.ccc.com"}</td>
                                 <td>mauris.sit.amet@nonmassa.ca</td>
                                 <td>27.06.17</td>
@@ -126,7 +122,6 @@
                             </tr>
                             <tr>
                                 <td>4</td>
-                                <td>http://www.gefsgpegypt.org/Portals/0/empty_profile.gif</td>
                                 <td>{"text": "Juliet Mcfarland", "url": "http://www.eee.com"}</td>
                                 <td>egestas.Duis.ac@eu.net</td>
                                 <td>02.07.16</td>
@@ -137,7 +132,6 @@
                             </tr>
                             <tr>
                                 <td>5</td>
-                                <td>http://www.gefsgpegypt.org/Portals/0/empty_profile.gif</td>
                                 <td>{"url": "http://www.ddd.com", "text": "Aaron Weaver"}</td>
                                 <td>Curabitur@fermentumconvallisligula.org</td>
                                 <td>07.06.17</td>
@@ -191,41 +185,6 @@
                                 } catch (e) {
                                   return row[column.id];
                                 }
-                            },
-                            // Fixed column: Media object with media-object and text
-                            'avatar': function(column, row) {
-                              try {
-                                var rows = column.rows.split(',');
-                                var self = this;
-                                var compiledRows = [];
-                                var $avatarMarkup = $('<div class="fixed-cell-content"><div class="media"><div class="media-left"></div></div></div>');
-                                var imgMarkup = '<div class="media-object avatar-sm"><img src="' + row[column.id] + '" style="width:60px;"></div>';
-                                if (row[column.id] == '') {
-                                  imgMarkup = '<div class="media-object avatar-sm empty"><div>Add Photo</div></div>';
-                                }
-                                $avatarMarkup.find('.media').prepend(imgMarkup);
-
-                                $.each(rows, function(index, element) {
-                                  var content = row[element];
-                                  var template = element.template || '<p>__data__</p>';
-                                  var column = self.getColumnSettings({id: element})[0];
-
-                                  if (element.formatter || column.formatter) {
-                                      var formatter = column.formatter || element.formatter;
-                                      content = ($.isFunction(formatter)) ?
-                                          formatter.call(self, column, row) :
-                                          column.converter.to(row[column.id]);
-                                  }
-                                  var data = template.replace('__data__', content);
-                                  compiledRows.push(data);
-                                });
-
-                                $avatarMarkup.find('.media-left').append(compiledRows.join(''));
-
-                                return $avatarMarkup.html();
-                              } catch (e) {
-                                return row[column.id];
-                              }
                             }
                         },
                         converters: {
