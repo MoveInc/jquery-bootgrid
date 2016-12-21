@@ -1,5 +1,5 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 12/14/2016
+ * jQuery Bootgrid v1.4.2 - 12/20/2016
  * Copyright (c) 2014-2016 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
@@ -113,6 +113,9 @@ function loadColumns() {
 				order: (!sorted && (data.order === "asc" || data.order === "desc")) ? data.order : null,
 				searchable: !(data.searchable === false), // default: true
 				sortable: !(data.sortable === false), // default: true
+				sortKey: data.sortKey || '',
+				sortRendered: data.sortRendered || false, // default: false
+				rows: data.derivedRows || [],
 				visible: !(data.visible === false), // default: true
 				visibleInSelection: !(data.visibleInSelection === false), // default: true
 				width: ($.isNumeric(data.width)) ? data.width + "px" :
@@ -160,7 +163,7 @@ function loadData() {
 		for (var i = 0; i < that.columns.length; i++) {
 			column = that.columns[i];
 			if (column.searchable && (column.visible || that.options.searchSettings.includeHidden ) &&
-				column.converter.to(row[column.id], row).toString().search(searchPattern) > -1) {
+				column.converter.to(row[column.id], row, column, that).toString().search(searchPattern) > -1) {
 				return true;
 			}
 		}
@@ -386,7 +389,7 @@ function renderColumnSelection(actions) {
 							loadData.call(that);
 						}
 					})
-					.on("change" + namespace, checkboxSelector, function(e){
+					.on("change" + namespace, checkboxSelector, function(e) {
 						var $this = $(this);
 						that.element.trigger('toggleColumn', [column.id, column.text, column.visible]);
 					});
@@ -538,12 +541,12 @@ function renderRowCountSelection(actions) {
 					var $this = $(this),
 						newRowCount = $this.data("action");
 					if (newRowCount !== that.rowCount) {
-						if(that.options.resolvePageFromRowCount){
+						if (that.options.resolvePageFromRowCount) {
 							var page = that.current > 1 ? that.current : 1;
-							var skip = that.current > 1 ? that.rowCount * (that.current-1) + 1 : 0;
-							var newPage = skip > 1 ? Math.ceil(skip/newRowCount) : 1;
+							var skip = that.current > 1 ? that.rowCount * (that.current - 1) + 1 : 0;
+							var newPage = skip > 1 ? Math.ceil(skip / newRowCount) : 1;
 							that.current = newRowCount > 0 ? newPage : 1;
-						}else{
+						} else {
 							that.current = 1;
 						}
 						that.rowCount = newRowCount;
@@ -604,7 +607,7 @@ function renderRows(rows) {
 				if (column.visible) {
 					var value = ($.isFunction(column.formatter)) ?
 						column.formatter.call(that, column, row) :
-						column.converter.to(row[column.id], row),
+						column.converter.to(row[column.id], row, column, that),
 						cssClass = (column.cssClass.length > 0) ? " " + column.cssClass : "";
 					cells += tpl.cell.resolve(getParams.call(that, {
 						content: (value == null || value === "") ? "&nbsp;" : value,
@@ -863,30 +866,52 @@ function showLoading() {
 }
 
 function sortRows() {
+	var that = this;
 	var sortArray = [];
 
 	function sort(x, y, current) {
 		current = current || 0;
 		var next = current + 1,
-			item = sortArray[current];
+			item = sortArray[current],
+			cell = item.id;
 
 		function sortOrder(value) {
 			return (item.order === "asc") ? value : value * -1;
 		}
 
-		var a = x[item.id] || '';
-		var b = y[item.id] || '';
+		var column = that.getColumnSettings({
+			id: cell
+		})[0];
+
+		if (column.sortKey) {
+			cell = column.sortKey;
+			column = that.getColumnSettings({
+				id: cell
+			})[0];
+		}
+
+		var a = x[cell];
+		var b = y[cell];
+
+		if (column.sortRendered) {
+			a = ($.isFunction(column.formatter)) ?
+				column.formatter.call(that, column, x) :
+				column.converter.to(x[column.id]);
+			try {
+				a = $(a).text() || a;
+			} catch (e) {}
+			b = ($.isFunction(column.formatter)) ?
+				column.formatter.call(that, column, y) :
+				column.converter.to(y[column.id]);
+			try {
+				b = $(b).text() || b;
+			} catch (e) {}
+		}
+
 		if (that.options.caseSensitive) {
 			a = $.type(a) === 'string' ? a.toLowerCase() : a;
 			b = $.type(b) === 'string' ? b.toLowerCase() : b;
 		}
-
-		// if column has a converter, use it
-    var col = that.getColumnSettings({id: item.id});
-    if(col.length > 0){
-        a = col[0].converter ? col[0].converter.from(a, x) : a;
-        b = col[0].converter ? col[0].converter.from(b, y) : b;
-    }
 
 		return (a > b) ? sortOrder(1) :
 			(a < b) ? sortOrder(-1) :
@@ -894,8 +919,6 @@ function sortRows() {
 	}
 
 	if (!this.options.ajax || !this.options.dataFunc) {
-		var that = this;
-
 		for (var key in this.sortDictionary) {
 			if (this.options.multiSort || sortArray.length === 0) {
 				sortArray.push({
@@ -1193,7 +1216,28 @@ Grid.defaults = {
             // default converter
             from: function (value) { return value; },
             to: function (value) { return value; }
-        }
+        },
+        derived: {
+            // applies reference column converter to each row
+            to: function(val, row, column, grid) {
+              try {
+                var rows = column.rows.split(',');
+                var self = grid;
+                var compiledRows = [];
+                $.each(rows, function(index, element) {
+                  var column = self.getColumnSettings({id: element})[0];
+                  var content = column.converter.to(row[column.id]);
+                  compiledRows.push(content);
+                });
+                return compiledRows.join('');
+              } catch (e) {
+                return val;
+              }
+            },
+            from: function(val) {
+              return val;
+            }
+          }
     },
 
     /**
@@ -1267,7 +1311,31 @@ Grid.defaults = {
      * @for defaults
      * @since 1.0.0
      **/
-    formatters: {},
+    formatters: {
+      'derived': function(column, row) {
+        try {
+          var rows = column.rows.split(',');
+          var self = this;
+          var compiledRows = [];
+          $.each(rows, function(index, element) {
+            var content = row[element];
+            var template = element.template || '<p>__data__</p>';
+            var column = self.getColumnSettings({id: element})[0];
+            if (element.formatter || column.formatter) {
+                var formatter = column.formatter || element.formatter;
+                content = ($.isFunction(formatter)) ?
+                    formatter.call(self, column, row) :
+                    column.converter.to(row[column.id]);
+            }
+            var data = template.replace('__data__', content);
+            compiledRows.push(data);
+          });
+          return compiledRows.join('');
+        } catch (e) {
+          return row[column.id];
+        }
+      }
+    },
 
     /**
      * Contains all labels.
