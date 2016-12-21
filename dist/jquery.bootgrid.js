@@ -323,7 +323,7 @@ function renderActions() {
 				actions = $(tpl.actions.resolve(getParams.call(this)));
 
 			// Refresh Button
-			if (this.options.ajax || this.options.dataFunc) {
+			if ((this.options.ajax || this.options.dataFunc) && this.options.ajaxSettings.includeRefresh) {
 				var refreshIcon = tpl.icon.resolve(getParams.call(this, {
 						iconCss: css.iconRefresh
 					})),
@@ -1128,7 +1128,17 @@ Grid.defaults = {
          * @default "POST"
          * @for ajaxSettings
          **/
-        method: "POST"
+        method: "POST",
+
+        /**
+         * Option if refresh button should be shown
+         *
+         * @property includeRefresh
+         * @type Boolean
+         * @default true
+         * @for ajaxSettings
+         **/
+        includeRefresh: true
     },
 
     /**

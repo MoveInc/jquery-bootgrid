@@ -192,7 +192,17 @@ Grid.defaults = {
          * @default "POST"
          * @for ajaxSettings
          **/
-        method: "POST"
+        method: "POST",
+
+        /**
+         * Option if refresh button should be shown
+         *
+         * @property includeRefresh
+         * @type Boolean
+         * @default true
+         * @for ajaxSettings
+         **/
+        includeRefresh: true
     },
 
     /**
