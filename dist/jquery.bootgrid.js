@@ -1,5 +1,5 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 11/03/2016
+ * jQuery Bootgrid v1.4.2 - 12/20/2016
  * Copyright (c) 2014-2016 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
@@ -163,7 +163,7 @@ function loadData() {
 		for (var i = 0; i < that.columns.length; i++) {
 			column = that.columns[i];
 			if (column.searchable && (column.visible || that.options.searchSettings.includeHidden ) &&
-				column.converter.to(row[column.id], row).toString().search(searchPattern) > -1) {
+				column.converter.to(row[column.id], row, column, that).toString().search(searchPattern) > -1) {
 				return true;
 			}
 		}
@@ -898,13 +898,13 @@ function sortRows() {
 				column.formatter.call(that, column, x) :
 				column.converter.to(x[column.id]);
 			try {
-				a = $(a).text();
+				a = $(a).text() || a;
 			} catch (e) {}
 			b = ($.isFunction(column.formatter)) ?
 				column.formatter.call(that, column, y) :
 				column.converter.to(y[column.id]);
 			try {
-				b = $(b).text();
+				b = $(b).text() || b;
 			} catch (e) {}
 		}
 
