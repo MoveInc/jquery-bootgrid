@@ -898,7 +898,7 @@ function sortRows() {
 			} catch (e) {}
 		}
 
-		if (that.options.caseSensitive) {
+		if (!that.options.caseSensitive) {
 			a = $.type(a) === 'string' ? a.toLowerCase() : a;
 			b = $.type(b) === 'string' ? b.toLowerCase() : b;
 		}

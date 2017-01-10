@@ -1,6 +1,6 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 12/20/2016
- * Copyright (c) 2014-2016 Rafael Staib (http://www.jquery-bootgrid.com)
+ * jQuery Bootgrid v1.4.2 - 01/10/2017
+ * Copyright (c) 2014-2017 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
 ;(function ($, window, undefined)
@@ -908,7 +908,7 @@ function sortRows() {
 			} catch (e) {}
 		}
 
-		if (that.options.caseSensitive) {
+		if (!that.options.caseSensitive) {
 			a = $.type(a) === 'string' ? a.toLowerCase() : a;
 			b = $.type(b) === 'string' ? b.toLowerCase() : b;
 		}
