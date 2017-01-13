@@ -859,6 +859,8 @@ function sortRows() {
 	var that = this;
 	var sortArray = [];
 
+	that.element.trigger('sort', that.getSortDictionary());
+
 	function sort(x, y, current) {
 		current = current || 0;
 		var next = current + 1,
