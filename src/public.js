@@ -27,7 +27,7 @@ var Grid = function(element, options)
     if($.isArray(rowCount)){
         var defaultRowCount = this.options.defaultRowCount = this.element.data().defaultRowCount || options.defaultRowCount || this.options.defaultRowCount;
         this.rowCount = (rowCount.indexOf(defaultRowCount) > -1) ? defaultRowCount : rowCount[0];
-    };
+    }
     this.rows = [];
     this.searchPhrase = "";
     this.selectedRows = [];
