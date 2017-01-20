@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements & Features
+- Add `defaultRowCount` property to set default row count from rowCount array
+- Add `sort` event; triggered when column is sorted
+
 ## 1.4.3
 
 ### Enhancements & Features

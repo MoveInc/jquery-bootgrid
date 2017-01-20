@@ -23,7 +23,11 @@ var Grid = function(element, options)
     this.identifier = null; // The first column ID that is marked as identifier
     this.selection = false;
     this.converter = null; // The converter for the column that is marked as identifier
-    this.rowCount = ($.isArray(rowCount)) ? rowCount[0] : rowCount;
+    this.rowCount = rowCount;
+    if($.isArray(rowCount)){
+        var defaultRowCount = this.options.defaultRowCount = this.element.data().defaultRowCount || options.defaultRowCount || this.options.defaultRowCount;
+        this.rowCount = (rowCount.indexOf(defaultRowCount) > -1) ? defaultRowCount : rowCount[0];
+    };
     this.rows = [];
     this.searchPhrase = "";
     this.selectedRows = [];
