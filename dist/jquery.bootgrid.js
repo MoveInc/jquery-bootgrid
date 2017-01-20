@@ -1,5 +1,5 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 01/10/2017
+ * jQuery Bootgrid v1.4.2 - 01/13/2017
  * Copyright (c) 2014-2017 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
@@ -868,6 +868,8 @@ function showLoading() {
 function sortRows() {
 	var that = this;
 	var sortArray = [];
+
+	that.element.trigger('sort', that.getSortDictionary());
 
 	function sort(x, y, current) {
 		current = current || 0;
