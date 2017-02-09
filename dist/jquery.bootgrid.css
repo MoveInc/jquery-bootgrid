@@ -1,5 +1,5 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 01/20/2017
+ * jQuery Bootgrid v1.4.2 - 02/10/2017
  * Copyright (c) 2014-2017 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
@@ -144,4 +144,7 @@
   -o-text-overflow: inherit !important;
   text-overflow: inherit !important;
   white-space: inherit !important;
+}
+.bootgrid-search-highlight {
+  font-weight: bold;
 }

@@ -77,6 +77,45 @@ function highlightAppendedRows(rows) {
 	}
 }
 
+// Replaces all occurrences of the word in the given html
+// Original source: http://stackoverflow.com/questions/8503121/replace-words-in-a-string-but-ignore-html
+function highlightResults(html) {
+	var that = this,
+		word = that.searchPhrase,
+		tpl = this.options.templates,
+		css = this.options.css,
+		container = document.createElement("div"),
+		regexFlag = that.options.caseSensitive ? 'g' : 'gi',
+		regex = new RegExp('(' + word + ')', regexFlag);
+
+	container.innerHTML = html;
+
+	// Traverses the given element and apply the text replacement function with the given regex
+	function traverseElement(el, regex, textReplacerFunc) {
+		var child = el.lastChild;
+		while (child) {
+			if (child.nodeType === 1) {
+				traverseElement(child, regex, textReplacerFunc);
+			} else if (child.nodeType === 3) {
+				textReplacerFunc(child, regex);
+			}
+			child = child.previousSibling;
+		}
+	}
+
+	traverseElement(container, regex, function(textNode, regex) {
+		// need this as the rendered cell will encode any html tags which will not render
+		textNode.data = textNode.data.replace(regex, "{{$1}}");
+	});
+
+	var reg = new RegExp("(?:{{)(.*?)(?:}})", "g");
+	return container.innerHTML.replace(reg, function(str, el){
+		return tpl.highlightResults.resolve(getParams.call(that, {
+			content: el
+		}));
+	});
+}
+
 function isVisible(column) {
 	return column.visible;
 }
@@ -152,7 +191,7 @@ function loadData() {
 
 		for (var i = 0; i < that.columns.length; i++) {
 			column = that.columns[i];
-			if (column.searchable && (column.visible || that.options.searchSettings.includeHidden ) &&
+			if (column.searchable && (column.visible || that.options.searchSettings.includeHidden) &&
 				column.converter.to(row[column.id], row, column, that).toString().search(searchPattern) > -1) {
 				return true;
 			}
@@ -599,6 +638,12 @@ function renderRows(rows) {
 						column.formatter.call(that, column, row) :
 						column.converter.to(row[column.id], row, column, that),
 						cssClass = (column.cssClass.length > 0) ? " " + column.cssClass : "";
+
+					// Highlight search phrase if available
+					if (that.searchPhrase !== '' && that.options.searchSettings.highlightResults) {
+						value = highlightResults.call(that, value);
+					}
+
 					cells += tpl.cell.resolve(getParams.call(that, {
 						content: (value == null || value === "") ? "&nbsp;" : value,
 						css: ((column.align === "right") ? css.right : (column.align === "center") ?
