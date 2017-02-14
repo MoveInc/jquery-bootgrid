@@ -5,6 +5,9 @@
 ### Enhancements & Features
 - Add `defaultRowCount` property to set default row count from rowCount array
 - Add `sort` event; triggered when column is sorted
+- Add `searchSettings.highlightResults` option to wrap matching substrings that match the query in result set
+    - Add `highlightResults` css class to options
+    - Add `highlightResults` template which wraps the matched substring
 
 ## 1.4.3
 

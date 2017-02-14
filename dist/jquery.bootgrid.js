@@ -1,5 +1,5 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 01/20/2017
+ * jQuery Bootgrid v1.4.2 - 02/10/2017
  * Copyright (c) 2014-2017 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
@@ -87,6 +87,45 @@ function highlightAppendedRows(rows) {
 	}
 }
 
+// Replaces all occurrences of the word in the given html
+// Original source: http://stackoverflow.com/questions/8503121/replace-words-in-a-string-but-ignore-html
+function highlightResults(html) {
+	var that = this,
+		word = that.searchPhrase,
+		tpl = this.options.templates,
+		css = this.options.css,
+		container = document.createElement("div"),
+		regexFlag = that.options.caseSensitive ? 'g' : 'gi',
+		regex = new RegExp('(' + word + ')', regexFlag);
+
+	container.innerHTML = html;
+
+	// Traverses the given element and apply the text replacement function with the given regex
+	function traverseElement(el, regex, textReplacerFunc) {
+		var child = el.lastChild;
+		while (child) {
+			if (child.nodeType === 1) {
+				traverseElement(child, regex, textReplacerFunc);
+			} else if (child.nodeType === 3) {
+				textReplacerFunc(child, regex);
+			}
+			child = child.previousSibling;
+		}
+	}
+
+	traverseElement(container, regex, function(textNode, regex) {
+		// need this as the rendered cell will encode any html tags which will not render
+		textNode.data = textNode.data.replace(regex, "{{$1}}");
+	});
+
+	var reg = new RegExp("(?:{{)(.*?)(?:}})", "g");
+	return container.innerHTML.replace(reg, function(str, el){
+		return tpl.highlightResults.resolve(getParams.call(that, {
+			content: el
+		}));
+	});
+}
+
 function isVisible(column) {
 	return column.visible;
 }
@@ -162,7 +201,7 @@ function loadData() {
 
 		for (var i = 0; i < that.columns.length; i++) {
 			column = that.columns[i];
-			if (column.searchable && (column.visible || that.options.searchSettings.includeHidden ) &&
+			if (column.searchable && (column.visible || that.options.searchSettings.includeHidden) &&
 				column.converter.to(row[column.id], row, column, that).toString().search(searchPattern) > -1) {
 				return true;
 			}
@@ -609,6 +648,12 @@ function renderRows(rows) {
 						column.formatter.call(that, column, row) :
 						column.converter.to(row[column.id], row, column, that),
 						cssClass = (column.cssClass.length > 0) ? " " + column.cssClass : "";
+
+					// Highlight search phrase if available
+					if (that.searchPhrase !== '' && that.options.searchSettings.highlightResults) {
+						value = highlightResults.call(that, value);
+					}
+
 					cells += tpl.cell.resolve(getParams.call(that, {
 						content: (value == null || value === "") ? "&nbsp;" : value,
 						css: ((column.align === "right") ? css.right : (column.align === "center") ?
@@ -1093,14 +1138,24 @@ Grid.defaults = {
         characters: 1,
 
         /**
-         * Option if search should ignore hidden columns
+         * Option if search should include hidden columns
          *
          * @property includeHidden
          * @type Boolean
          * @default false
          * @for searchSettings
          **/
-        includeHidden: false
+        includeHidden: false,
+
+        /**
+         * Option if search term in results should be highlighted
+         *
+         * @property highlightResults
+         * @type Boolean
+         * @default false
+         * @for searchSettings
+         **/
+        highlightResults: true
     },
 
     /**
@@ -1266,6 +1321,7 @@ Grid.defaults = {
         dropDownMenuText: "dropdown-text", // must be a unique class name or constellation of class names within the actionDropDown
         footer: "bootgrid-footer container-fluid",
         header: "bootgrid-header container-fluid",
+        highlightResults: "bootgrid-search-highlight",
         icon: "icon glyphicon",
         iconColumns: "glyphicon-th-list",
         iconDown: "glyphicon-chevron-down",
@@ -1276,7 +1332,6 @@ Grid.defaults = {
         left: "text-left",
         pagination: "pagination", // must be a unique class name or constellation of class names within the header and footer
         paginationButton: "button", // must be a unique class name or constellation of class names within the pagination
-
         /**
          * CSS class to select the parent div which activates responsive mode.
          *
@@ -1423,6 +1478,7 @@ Grid.defaults = {
         footer: "<div id=\"{{ctx.id}}\" class=\"{{css.footer}}\"><div class=\"row\"><div class=\"col-sm-6\"><p class=\"{{css.pagination}}\"></p></div><div class=\"col-sm-6 infoBar\"><p class=\"{{css.infos}}\"></p></div></div></div>",
         header: "<div id=\"{{ctx.id}}\" class=\"{{css.header}}\"><div class=\"row\"><div class=\"col-sm-12 actionBar\"><p class=\"{{css.search}}\"></p><p class=\"{{css.actions}}\"></p></div></div></div>",
         headerCell: "<th data-column-id=\"{{ctx.column.id}}\" class=\"{{ctx.css}}\" style=\"{{ctx.style}}\"><a href=\"javascript:void(0);\" class=\"{{css.columnHeaderAnchor}} {{ctx.sortable}}\"><span class=\"{{css.columnHeaderText}}\">{{ctx.column.text}}</span>{{ctx.icon}}</a></th>",
+        highlightResults: "<span class=\"{{css.highlightResults}}\">{{ctx.content}}</span>",
         icon: "<span class=\"{{css.icon}} {{ctx.iconCss}}\"></span>",
         infos: "<div class=\"{{css.infos}}\">{{lbl.infos}}</div>",
         loading: "<tr><td colspan=\"{{ctx.columns}}\" class=\"loading\">{{lbl.loading}}</td></tr>",
