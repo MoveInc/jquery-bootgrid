@@ -32,6 +32,7 @@ var Grid = function(element, options)
     this.searchPhrase = "";
     this.selectedRows = [];
     this.sortDictionary = {};
+    this.storage = this.options.storage; // This is used to store a list of objects that can be used for formatters
     this.total = 0;
     this.totalPages = 0;
     this.cachedParams = {
