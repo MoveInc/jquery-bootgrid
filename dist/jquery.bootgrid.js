@@ -1,5 +1,5 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 02/10/2017
+ * jQuery Bootgrid v1.4.2 - 08/02/2017
  * Copyright (c) 2014-2017 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
@@ -1777,6 +1777,37 @@ Grid.prototype.deselect = function(rowIds)
             }
 
             this.element.trigger("deselected" + namespace, [deselectedRows]);
+        }
+    }
+
+    return this;
+};
+
+/**
+ * Deselects all rows.
+ *
+ * @method deselectAll
+ * @chainable
+ **/
+Grid.prototype.deselectAll = function()
+{
+    if (this.selection)
+    {
+        if (this.selectedRows.length > 0)
+        {
+            var deselected = [];
+            var selectBoxSelector = getCssSelector(this.options.css.selectBox);
+
+            this.element.find("thead " + selectBoxSelector).prop("checked", false);
+            for (var i = 0; i < this.selectedRows.length; i++)
+            {
+                this.element.find("tbody > tr[data-row-id=\"" + this.selectedRows[i] + "\"]")
+                    .removeClass(this.options.css.selected)._bgAria("selected", "false")
+                    .find(selectBoxSelector).prop("checked", false);
+            }
+
+            this.selectedRows = [];
+            this.element.trigger("deselected" + namespace, [deselected]);
         }
     }
 

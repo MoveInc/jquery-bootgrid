@@ -801,6 +801,37 @@ Grid.prototype.deselect = function(rowIds)
 };
 
 /**
+ * Deselects all rows.
+ *
+ * @method deselectAll
+ * @chainable
+ **/
+Grid.prototype.deselectAll = function()
+{
+    if (this.selection)
+    {
+        if (this.selectedRows.length > 0)
+        {
+            var deselected = [];
+            var selectBoxSelector = getCssSelector(this.options.css.selectBox);
+
+            this.element.find("thead " + selectBoxSelector).prop("checked", false);
+            for (var i = 0; i < this.selectedRows.length; i++)
+            {
+                this.element.find("tbody > tr[data-row-id=\"" + this.selectedRows[i] + "\"]")
+                    .removeClass(this.options.css.selected)._bgAria("selected", "false")
+                    .find(selectBoxSelector).prop("checked", false);
+            }
+
+            this.selectedRows = [];
+            this.element.trigger("deselected" + namespace, [deselected]);
+        }
+    }
+
+    return this;
+};
+
+/**
  * Sorts the rows by a given sort descriptor dictionary.
  * The sort filter will be reseted, if no argument is provided.
  *

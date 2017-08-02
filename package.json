@@ -66,7 +66,9 @@
     "grunt-contrib-yuidoc": "^1.0.0",
     "grunt-exec": "^1.0.0",
     "grunt-nuget": "~0.1.4",
-    "grunt-regex-replace": "^0.3.0"
+    "grunt-regex-replace": "^0.3.0",
+    "hapi": "^16.5.0",
+    "inert": "^4.2.1"
   },
   "readmeFilename": "README.md"
 }
