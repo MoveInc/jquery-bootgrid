@@ -1,6 +1,6 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 08/02/2017
- * Copyright (c) 2014-2017 Rafael Staib (http://www.jquery-bootgrid.com)
+ * jQuery Bootgrid v1.4.2 - 05/24/2018
+ * Copyright (c) 2014-2018 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
 ;(function ($, window, undefined)
@@ -87,11 +87,15 @@ function highlightAppendedRows(rows) {
 	}
 }
 
+function escapeRegExp(str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
 // Replaces all occurrences of the word in the given html
 // Original source: http://stackoverflow.com/questions/8503121/replace-words-in-a-string-but-ignore-html
 function highlightResults(html) {
 	var that = this,
-		word = that.searchPhrase,
+		word = escapeRegExp(that.searchPhrase),
 		tpl = this.options.templates,
 		css = this.options.css,
 		container = document.createElement("div"),
@@ -189,6 +193,8 @@ response = {
 }
 */
 
+
+
 function loadData() {
 	var that = this;
 
@@ -196,9 +202,8 @@ function loadData() {
 	showLoading.call(this);
 
 	function containsPhrase(row) {
-		var column,
-			searchPattern = new RegExp(that.searchPhrase, (that.options.caseSensitive) ? "g" : "gi");
-
+		var column;
+        var	searchPattern = new RegExp(escapeRegExp(that.searchPhrase), (that.options.caseSensitive) ? "g" : "gi");
 		for (var i = 0; i < that.columns.length; i++) {
 			column = that.columns[i];
 			if (column.searchable && (column.visible || that.options.searchSettings.includeHidden) &&
