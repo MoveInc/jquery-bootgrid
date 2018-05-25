@@ -1,6 +1,6 @@
 /*! 
- * jQuery Bootgrid v1.4.2 - 08/02/2017
- * Copyright (c) 2014-2017 Rafael Staib (http://www.jquery-bootgrid.com)
+ * jQuery Bootgrid v1.4.2 - 05/24/2018
+ * Copyright (c) 2014-2018 Rafael Staib (http://www.jquery-bootgrid.com)
  * Licensed under MIT http://www.opensource.org/licenses/MIT
  */
 ;(function ($, window, undefined)
